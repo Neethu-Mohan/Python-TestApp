@@ -1,28 +1,16 @@
-FROM python:3.8-alpine
+FROM python:3.7-alpine
 
-ENV PATH="/scripts:${PATH}"
+ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt /requirements.txt
-RUN apk add --update --no-cachae --virtual .tmp gcc  libc-dev linux-headers
-## packages are required on alpine in order to install wsgi server
+
 RUN pip install -r /requirements.txt
-RUN apk del .tmp
 
 RUN mkdir /app
-COPY ./app /app
 WORKDIR /app
-copy ./scripts /scripts
-
-
-RUN chmod +x /scripts/*
-
-RUN mkdir -p /vol/web/media
-RUN mkdir -p /vol/web/static
-
+COPY ./app /app
 
 RUN adduser -D user
-RUN chown -R user:user /vol
-RUN chmod -R 755 /vol/web
 USER user
 
-CMD ["entrypoint.sh"]
+
